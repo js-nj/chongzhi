@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- application package info -->
+<package_info>
+
+    <!-- 应用信息 -->
+    <application>
+        <!-- 应用类型: web、mobile、web/mobile -->
+        <type>MOBILE_APP</type>
+        <!-- 应用申请的application ID -->
+        <identity>5149715096539922</identity>
+        <!-- 应用缩写，由字母数字下划线组成，不超过40字节 -->
+        <name>pubmcjcxapp</name>
+        <!-- 应用中文名称，不超过20汉字 -->
+        <cname>移动成绩查询</cname>
+        <!-- 应用制造商,不超过20汉字 -->
+        <vendor>金智教育</vendor>
+        <!-- 应用的分类标签，用于定义云端应用的作用域。 -->
+        <category>20</category>
+        <!-- 应用描述，不超过300汉字 -->
+        <description>移动成绩查询</description>
+        <!-- 应用版本号: X.XX.XXX -->
+        <version>2.0.1_EM1</version>
+    </application>
+
+    <appConfig>
+            <mobileAppInfo>
+                <title>pubmcjcxapp</title>
+                <entranceUrl>/sys/pubmcjcxapp/index.do</entranceUrl>
+                <description>移动成绩查询</description>
+                <mobileAppType>2</mobileAppType>
+            </mobileAppInfo>
+    </appConfig>
+
+    <!-- 应用开发者调用总线API所需要的开发证书 -->
+    <cer>gifg06U9fPp2dArAXNPgZZRJfJ0sCKnI4sy1UALzUo1jWK1wgNGScBNKhXEULYklb9YGwt1hw0jwpyKaNsJq9EbNBg+fTPZGm/Ep+RGhXgr2i3l59+i4k1YBBinwV9n+M7hurXNkCh3SkHZHtqzazL7J9BvgOfSIYY7UaiHfj55Rb364NIEBoh3zvd3WWZww176PEAcKnngGryaCJA4wL0o4Xgvgev5QuOBV1rR8AumdlVIdKb/ihoFdKKLwaX7YCu9SnUNWqhLFkHNzW0WD5HPVqtmvyeo5nDEXJeF8iGA/xtMxHHLSw25egW+imnnBptHkP6JGY4w8gHLr4DGI5Q==</cer>
+
+    <!-- API清单 -->
+    <apis>
+        <host>http://apisdev.wisedu.com:8081/</host>
+    </apis>
+
+</package_info>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<permissions prefix="">
+    <permission name="pubmcjcxapp" cn="成绩查询" menu="true">
+        <attribute name="GNBS" value="cjcx"/>
+        <attribute name="PX" value="1"/>
+        <attribute name="LX" value="1"/>
+        <attribute name="GNFW" value="MOBILE"/>
+        <path value="/sys/pubcjcxapp/api/*" type="normal" needLogin="true" expr="true"/>
+    </permission>
+    <exclude>
+        <path value="/sys/pubmcjcxapp/auth.do" type="global" needLogin="false" expr="false"/>
+        <path value="/sys/pubmcjcxapp/index.do" type="global" needLogin="false" expr="false"/>
+    </exclude>
+</permissions>
+
