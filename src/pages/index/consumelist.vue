@@ -1,25 +1,20 @@
 <template>
   <div style="height:100%;background: #f8f8f8;">
-    <div class="jy-cl-list" v-if="!showFilter">
-      <mt-search class="jy-consumelist-search" v-model="searchValue" cancel-text="取消" placeholder="请选择查询信息">
-      </mt-search>
-      <div class="jy-consumelist-cover" @click="showFilterVue()"></div>
+    <div class="jy-cl-list">
+      <!-- <mt-search class="jy-consumelist-search" v-model="searchValue" cancel-text="取消" placeholder="请选择查询信息">
+      </mt-search> -->
+      <!-- <div class="jy-consumelist-cover" @click="showFilterVue()"></div> -->
       <ul class="jy-consumelist" >
         <mt-loadmore :top-method="loadTop" :autoFill="false" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
           <div v-if="list.length>0" style="padding:0 16px;">
             <ul>
-              <li v-for="item in list" class="jy-consumelist-item" @click="gotoConsumeDetail(item)">
-                <img class="jy-consumelist-item-logo" src="../../assets/logo.png" />
+              <li v-for="item in list" class="jy-consumelist-item" >
+                <img class="jy-consumelist-item-logo" src="../../assets/logo2.png" />
                 <div class="jy-consumelist-item-detail" style="">
-                  <div class="jy-consumelist-item-name" style="">单号-{{item.orderNum}}</div>
-                  <div class="jy-consumelist-item-location" style="">{{item.stationName}}</div>
+                  <div class="jy-consumelist-item-name" style="">充值金额-{{item.pay_amount}}</div>
                   <div style="color:rgba(153,153,153,1);font-size:12px;">
-                    {{item.orderTime}}
+                    充值时间-{{item.pay_time}}
                   </div>
-                </div>
-                <div class="jy-consumelist-item-distance">
-                  <div style="color:rgba(242,78,78,1);font-size:20px;" v-html="Number(item.orderTotal).toFixed(2)"></div>
-                  <label style="color:rgba(170,170,170,1);font-size:12px;">查看详情 ></label>
                 </div>
               </li>
             </ul>
@@ -31,10 +26,6 @@
           </div>
         </mt-loadmore>
       </ul>
-    </div>
-    <div class="jy-cl-filter" v-else>
-      <emapm-form :model="model" v-model="formValue" ref="form" textalign="flex-end"></emapm-form>
-      <div class="jy-goindex_btn jy-update-info" @click="confirm()">确 认</div>
     </div>
   </div>
 </template>
@@ -85,20 +76,7 @@ export default {
   },
   created() {
     window.userInfo = JSON.parse(localStorage.userInfo);
-    this.todayFlag = this.$route.params.today;
-    if (this.todayFlag === true) {
-      document.title = "今日加油记录";
-    } else if (this.todayFlag === false) {
-      document.title = "历史加油记录";
-    } else {
-      document.title = "加油记录";
-    }
-
-    // if (window.userInfo.userType === '2') {
-    //   document.title = "加油记录";
-    // } else {
-    //   document.title = "消费记录";
-    // }
+    
     this.getOilorderList();
   },
   watch: {
@@ -115,7 +93,7 @@ export default {
       this.getOilorderList({
         page: this.page
       });
-      debugger;
+      // debugger;
       this.$refs.loadmore.onTopLoaded();
     },
     loadBottom() {
@@ -152,54 +130,32 @@ export default {
     },
     getOilorderList(param, type) {
       var that = this;
-      var tmpParam = Object.assign({
-        "page": this.page,
-        "limit": this.limit,
-      }, param);
-      // if (this.todayFlag === true) {
-      //   tmpParam.orderBeginTime = getNowDateStr()+' 00:00:00';
-      //   tmpParam.orderEndTime = getNowDateStr()+' 23:59:59';
-      // }
-      if (window.userInfo.driverId) {
-        tmpParam.driverId = window.userInfo.driverId;
-      } else if (window.userInfo.stationId) {
-        tmpParam.stationId = window.userInfo.stationId;
-      } else if (window.userInfo.companyId) {
-        tmpParam.companyId = window.userInfo.companyId;
-      }
-      var tmpType = type;
-      // driverId: window.userInfo.driverId,
-      utils.Get('oilorderList', tmpParam)
+      var tmpParam = {
+        page:1,//  int *当前页数
+        limit:999,// int *页面大小
+        user_id:window.userInfo.id
+      };
+      utils.Get('PayList', tmpParam)
         .then((response) => {
-          // debugger;
           let data = response.data;
-          that.showContent = true;
-          if (data.code === 0) {
-            if (tmpType == 'search') {
-              that.list = [];
-            }
-            if (data.page.list.length < 10) {
-              that.allLoaded = true;
-              // debugger;
-              that.$refs.loadmore.onBottomLoaded();
-            } else if (data.page.list.length == 10) {
-              that.page++
-            }
-            for (let i = 0; i <= that.limit; i++) {
-              if (data.page.list[i]) {
-                that.list.push(data.page.list[i]);
-              }
-            }
+          if (data.code === '0') {
+            that.list = data.data;
+            // rownumber string  无
+            // id  string  无
+            // user_id string  无
+            // pay_amount  string  充值金额
+            // pay_time  string  充值时间
+            // pay_type  string  1充值，0消费
+            // pay_source
           } else {
-            Toast(data.msg || '获取加油记录失败！');
+            // Toast(data.msg || '获取加油记录失败！');
           }
         }).catch((error) => {
-          Toast('获取加油记录失败！');
-
+          // Toast('获取加油记录失败！');
         })
     },
     showFilterVue() {
-      document.title = "加油记录查询";
+      document.title = "充值记录查询";
       this.showFilter = true;
     }
   }
@@ -257,7 +213,7 @@ export default {
   width: 40px;
   height: 40px;
   border-radius: 20px;
-  margin-top: 10px;
+  /*margin-top: 10px;*/
 }
 
 .jy-consumelist-item-logo {}
@@ -311,7 +267,7 @@ export default {
   display: inline-block;
   vertical-align: top;
   padding-left: 15px;
-  width: calc(100% - 120px);
+  width: calc(100% - 50px);
 }
 
 .jy-consumelist-nodata {

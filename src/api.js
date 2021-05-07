@@ -8,6 +8,8 @@ export default {
   getSMSPost: WEBPACK_CONFIG_HOST + '/WebService.asmx/SMSPost',
   UserLogin: WEBPACK_CONFIG_HOST + '/WebService.asmx/UserLogin',
   GetWxUser: WEBPACK_CONFIG_HOST + '/WebService.asmx/GetWxUser',
+  WXPay:WEBPACK_CONFIG_HOST + '/WebService.asmx/WXPay',
+  PayList:WEBPACK_CONFIG_HOST + '/WebService.asmx/PayList',
 
   // getWechatSign: WEBPACK_CONFIG_HOST + 'app/getWechatSign',
   // login: WEBPACK_CONFIG_HOST + 'app/login', //post

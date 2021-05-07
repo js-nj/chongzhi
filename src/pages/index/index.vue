@@ -10,7 +10,7 @@
             </div>
             <div class="jy-disblock jy-per-info" style="">
               <div class="jy-per-infoName" style="">{{userName}}</div>
-              <div class="jy-per-infoPhone" style="">账号：{{userPhone}}</div>
+              <div class="jy-per-infoPhone" style="">手机号：{{userPhone}}</div>
             </div>
           </div>
           <!-- <div class="jy-disblock" style="height: 70px;line-height: 70px;float: right;color:#101010;">修改资料</div> -->
@@ -19,7 +19,7 @@
           <div>
             <div class="jy-num-item">
               <div class="jy-num-height" v-html="Number(sumMoney).toFixed(2)"></div>
-              <div class="jy-num-des">账户余额/元</div>
+              <div class="jy-num-des">账户余额</div>
             </div>
            <!--  <div class="jy-num-item">
               <div class="jy-num-height">{{orderCount}}</div>
@@ -38,7 +38,7 @@
         <!-- <div class="jy-menu-title">我的功能</div> -->
         <div class="jy-menu-content">
           <div class="jy-menu-item">
-            <img style="" src="../../assets/jym.jpg" @click="gotoMenuItem({type:'qrdetail'})" />
+            <img style="" src="../../assets/jym.jpg" @click="chongzhi" />
             <p style="">充值</p>
           </div>
           <div class="jy-menu-item">
@@ -79,7 +79,7 @@
           </div>
         </div> -->
       </div>
-      <a class="jy-logout" @click="logout()">退出登录</a>
+      <!-- <a class="jy-logout" @click="logout()">退出登录</a> -->
     </div>
 </template>
 <script>
@@ -126,71 +126,18 @@ export default {
     }
   },
   created() {
-    document.title = "通达加油宝";
+    // document.title = "微信充值";
     if (window.logoutFlag) {
       this.$router.push({
         name: 'login'
       });
     }
     window.userInfo = JSON.parse(localStorage.userInfo);
-    this.userImg = window.userInfo.userImg;
-    this.userType = this.$route.params.userType || window.userInfo.userType || '1';
-    // debugger;
-    if (this.userType === '2') {
-      // if (window.userInfo) {
-      this.userName = window.userInfo.userName;
-      this.userPhone = window.userInfo.userPhone;
-      this.menuList = [{
-        name: '扫一扫',
-        img: '../../src/assets/jym.jpg'
-      }, {
-        name: '加油记录',
-        img: '../../src/assets/xfjl.jpg',
-        type: 'consumelist'
-      }, {
-        name: '修改密码',
-        img: '../../src/assets/xgmm.jpg',
-        type: 'editpw'
-      }, {
-        name: '客服中心',
-        img: '../../src/assets/kfzx.jpg',
-        type: 'supportCenter'
-      }];
-      // this.password = JSON.parse(localStorage.getItem('user')).password;
-      // }
-    } else {
-      // debugger
-      this.userName = window.userInfo.userName;
-      this.userPhone = window.userInfo.userPhone;
-      this.orderCount = window.userInfo.orderCount;
-      this.sumMoney = window.userInfo.sumMoney;
-      // this.getDriverInfo();
-    }
-    //更新余额与加油消费笔数等数据
-    utils.Get('getUserInfo',{id:window.userInfo.id}).then((response) => {
-      let data = response.data;
-      if (data.code === 0) {
-        this.sumMoney = data.result.sumMoney;
-        this.orderCount = data.result.orderCount;
-        data.result.userType = this.userType;
-        localStorage.userInfo = JSON.stringify(data.result);
-        // this.connectPhone = data.result.phone;
-      } else {
-        Toast('更新信息失败！');
-      }
-    }).catch((error) => {
-      Toast('更新信息失败！');
-    })
-    utils.Get('getServicePhone').then((response) => {
-      let data = response.data;
-      if (data.code === 0) {
-        this.connectPhone = data.result.phone;
-      } else {
-        Toast('获取联系方式失败！');
-      }
-    }).catch((error) => {
-      Toast('获取联系方式失败！');
-    })
+    this.userImg = window.userInfo.user_avatar;
+    this.userName = window.userInfo.userName || '云途用户';
+    this.userPhone = window.userInfo.user_phone;
+    // this.orderCount = window.userInfo.orderCount;
+    this.sumMoney = window.userInfo.apple_balance || '0.00';
 
   },
   computed: {
@@ -200,6 +147,64 @@ export default {
     }
   },
   methods: {
+    chongzhi(){
+      MessageBox.prompt('请输入金额').then(({ value, action }) => {
+        console.log('action',action)
+        let param = {
+          user_id:window.userInfo.id,// 是 string  用户ID
+          open_id:localStorage.open_id, //是 string  微信Open_ID
+          total_fee:value,
+        };
+        utils.Post('WXPay',param).then(function(response){
+          let data = JSON.parse(response.data.d);
+          if (data.code === '0') {
+            function onBridgeReady() {
+              WeixinJSBridge.invoke(
+                "getBrandWCPayRequest", {
+                  appId: data.result.appId, //公众号名称，由商户传入
+                  timeStamp:data.result.timeStamp, //时间戳，自1970年以来的秒数
+                  nonceStr: data.result.nonceStr, //随机串
+                  package: data.result.package,
+                  signType: data.result.signType, //微信签名方式：
+                  paySign: data.result.paySign //微信签名
+                },
+                wxResponse => {
+                  if (wxResponse.err_msg == "get_brand_wcpay_request:ok") {
+                    window.$toast("支付成功");
+                  }
+                  if (wxResponse.err_msg == "get_brand_wcpay_request:fail") {
+                    window.$toast("支付失败");
+                  }
+                 if (wxResponse.err_msg == "get_brand_wcpay_request:cancel") {
+                   window.$toast("支付取消");
+                  }
+                }
+              );
+            }
+            if (typeof WeixinJSBridge == "undefined") {
+              if (document.addEventListener) {
+                document.addEventListener(
+                  "WeixinJSBridgeReady",
+                  onBridgeReady,
+                  false
+                );
+              } else if (document.attachEvent) {
+                document.attachEvent("WeixinJSBridgeReady", onBridgeReady);
+                document.attachEvent(
+                  "onWeixinJSBridgeReady",
+                  onBridgeReady
+                );
+              }
+            } else {
+              onBridgeReady();
+            }
+          } else {
+            window.Toast(data.msg);
+            // this.wxBtn=true;
+          }
+        });
+      });
+    },
     scanQrCode() {
       debugger
       var that = this;

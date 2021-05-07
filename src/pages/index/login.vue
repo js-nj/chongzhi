@@ -37,7 +37,7 @@ export default {
     if (localStorage.getItem('updatePassword')) {
       this.updatePassword = localStorage.getItem('updatePassword');
     }
-    document.title = "充值App";
+    // document.title = "微信充值";
     this.GetWxUser();
   },
   watch:{
@@ -57,25 +57,26 @@ export default {
       }).then((response) => {
         let data = JSON.parse(response.data.d);
         if (data.code === '0') {
-          //验证微信的jssdk
-          // this.checkWxCode();
-          if(data.list && data.list.length>0){
-            localStorage.userInfo = JSON.stringify(data.list[0]);
-            window.userInfo = data.list[0];
-            Toast('登录成功！');
-            this.$router.push({
-              name: 'index',
-              params: {}
-            });
+          localStorage.userInfo = JSON.stringify(data.list[0]);
+          if(data.list[0].open_id){
+            localStorage.open_id = data.list[0].open_id;
           }else {
-            this.showLogin = true;
+            localStorage.open_id = 'oVLDyjgNiW2l3Cxk_s1wDOPisNnM';
           }
+          // window.userInfo = data.list[0];
+          Toast('登录成功！');
+          this.$router.push({
+            name: 'index',
+            params: {}
+          });
         } else {
-          Toast(data.msg || '获取用户信息失败！');
+          localStorage.open_id = data.list[0].open_id;
+          this.showLogin = true;
+          // Toast(data.msg || '获取用户信息失败！');
         }
         this.isBtnLoading = false;
       }).catch((error) => {
-        Toast('登录失败！');
+        Toast('获取用户信息失败~！');
         this.isBtnLoading = false;
       })
     },
@@ -89,16 +90,23 @@ export default {
         return;
       }
       this.isBtnLoading = true;
-      utils.Post('UserLogin', {
-        "user_mobile": this.userName,
-        "sms_code":this.checkNumber
+      utils.Get('UserLogin', {
+        "user_phone": this.userName,
+        "sms_code":this.checkNumber,
+        "from_user_code":"",
+        "user_type":"0",
+        "open_id":localStorage.open_id
+        // from_user_code  string  推荐码
+        // user_phone  string  *用户手机号
+        // user_type string  *用户类型1学生，0老师
+        // sms_code
       }).then((response) => {
-        let data = JSON.parse(response.data.d);
+        let data = response.data;
         if (data.code === '0') {
           //验证微信的jssdk
           // this.checkWxCode();
-          localStorage.userInfo = JSON.stringify(data.result);
-          window.userInfo = data.result;
+          localStorage.userInfo = JSON.stringify(data.data);
+          window.userInfo = data.data;
           Toast('登录成功！');
           this.$router.push({
             name: 'index',
@@ -118,14 +126,19 @@ export default {
       var totalSeconds = 60;
       if (self.checkCodeContent == '获取验证码') {
         utils.Get('getSMSPost', {
-          userPhone: this.userName
+          user_mobile: this.userName,
+          user_id:'',
+          token:'',
+          // user_mobile string  *用户手机号
+          // user_id string  *用户ID
+          // token
         }).then((response) => {
-          let data = JSON.parse(response.data.d);
-          console.log('--data--',data)
-          if (data.code === '0') {
+          // console.log('--getSMSPost--',response)
+          // let data = JSON.parse(response.data.d);
+          if (response.data.code === '0') {
 
           } else {
-            Toast('获取验证码失败！');
+            Toast(response.data.msg || '获取验证码失败！');
           }
         }).catch((error) => {
           Toast('获取验证码失败~！');
@@ -427,7 +440,7 @@ input.qxs-ic_check {
     transition: .1s;
     font-weight: 500;
     padding: 12px 20px;
-    font-size: 14px;
+    font-size: 24px;
     /*font-weight: 600;*/
     border-radius: 4px;
         /*color: #FFF;*/
