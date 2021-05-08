@@ -8,7 +8,7 @@
       <div class="login_form">
         <input type="text" class="qxs-icon" :placeholder="nameholder" v-model="userName">
         <div style="position:relative;">
-          <input type="text" class="qxs-icon" placeholder="验证码" v-model="checkNumber" /><span class="jy-getcode" @click="getCheckCode">{{checkCodeContent}}</span>
+          <input type="number" class="qxs-icon" placeholder="验证码" maxlength="4" v-model="checkNumber" /><span class="jy-getcode" @click="getCheckCode">{{checkCodeContent}}</span>
         </div>
         <button style="" class="index_login_btn login_btn" @click="login">登 录</button>
       </div>
@@ -64,7 +64,7 @@ export default {
             localStorage.open_id = 'oVLDyjgNiW2l3Cxk_s1wDOPisNnM';
           }
           // window.userInfo = data.list[0];
-          Toast('登录成功！');
+          // Toast('登录成功！');
           this.$router.push({
             name: 'index',
             params: {}
@@ -94,7 +94,7 @@ export default {
         "user_phone": this.userName,
         "sms_code":this.checkNumber,
         "from_user_code":"",
-        "user_type":"0",
+        "user_type":"1",
         "open_id":localStorage.open_id
         // from_user_code  string  推荐码
         // user_phone  string  *用户手机号
@@ -107,7 +107,7 @@ export default {
           // this.checkWxCode();
           localStorage.userInfo = JSON.stringify(data.data);
           window.userInfo = data.data;
-          Toast('登录成功！');
+          // Toast('登录成功！');
           this.$router.push({
             name: 'index',
             params: {}

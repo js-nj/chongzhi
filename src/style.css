@@ -19,7 +19,9 @@ body {
   background-color: #fff;
   /*font-family: "Microsoft YaHei UI Light";*/
 }
-
+.mint-msgbox-input input {
+  font-size: 22px;
+}
 .outer_label {
   position: relative;
   left: 0;

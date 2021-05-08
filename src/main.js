@@ -38,6 +38,10 @@ if (window.smile) {
 }
 
 Vue.use(Mint);
+
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+Vue.use(ElementUI);
 // Vue.use(VueRouter);
 // Vue.use(emapMobile)
 const router = new VueRouter(route);

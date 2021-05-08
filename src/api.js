@@ -10,6 +10,7 @@ export default {
   GetWxUser: WEBPACK_CONFIG_HOST + '/WebService.asmx/GetWxUser',
   WXPay:WEBPACK_CONFIG_HOST + '/WebService.asmx/WXPay',
   PayList:WEBPACK_CONFIG_HOST + '/WebService.asmx/PayList',
+  AppleBalance:WEBPACK_CONFIG_HOST + '/WebService.asmx/AppleBalance',
 
   // getWechatSign: WEBPACK_CONFIG_HOST + 'app/getWechatSign',
   // login: WEBPACK_CONFIG_HOST + 'app/login', //post

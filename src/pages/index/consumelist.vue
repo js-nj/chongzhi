@@ -4,16 +4,16 @@
       <!-- <mt-search class="jy-consumelist-search" v-model="searchValue" cancel-text="取消" placeholder="请选择查询信息">
       </mt-search> -->
       <!-- <div class="jy-consumelist-cover" @click="showFilterVue()"></div> -->
-      <ul class="jy-consumelist" >
-        <mt-loadmore :top-method="loadTop" :autoFill="false" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore">
+      <ul class="jy-consumelist" v-infinite-scroll="loadMore" infinite-scroll-disabled="loading" infinite-scroll-distance="40">
+        <!-- <mt-loadmore :top-method="loadTop" :autoFill="false" :bottom-method="loadBottom" :bottom-all-loaded="allLoaded" ref="loadmore"> -->
           <div v-if="list.length>0" style="padding:0 16px;">
             <ul>
               <li v-for="item in list" class="jy-consumelist-item" >
                 <img class="jy-consumelist-item-logo" src="../../assets/logo2.png" />
                 <div class="jy-consumelist-item-detail" style="">
-                  <div class="jy-consumelist-item-name" style="">充值金额-{{item.pay_amount}}</div>
-                  <div style="color:rgba(153,153,153,1);font-size:12px;">
-                    充值时间-{{item.pay_time}}
+                  <div class="jy-consumelist-item-name" style="">充值金额：{{item.pay_amount}}</div>
+                  <div style="color:rgba(153,153,153,1);font-size:14px;">
+                    充值时间：{{item.pay_time}}
                   </div>
                 </div>
               </li>
@@ -24,8 +24,13 @@
             <div class="jy-nodata-des">暂无数据</div>
             <!-- <img src="../../assets/nodata.png" /> -->
           </div>
-        </mt-loadmore>
+        <!-- </mt-loadmore> -->
       </ul>
+      <!-- <p v-show="loading" class="page-infinite-loading">
+        <mt-spinner type="fading-circle"></mt-spinner>
+        加载中...
+      </p> -->
+      <p v-show="allLoaded" class="page-infinite-loading">没有更多数据了</p>
     </div>
   </div>
 </template>
@@ -41,6 +46,9 @@ export default {
   data() {
     return {
       list: [],
+      loading: false,
+      allLoaded: false,
+      haveNoFull:false,
       page: 1,
       searchValue: '',
       showContent: false,
@@ -68,7 +76,7 @@ export default {
         "xtype": "text",
       }],
       todayFlag: '',
-      allLoaded: false
+      // allLoaded: false
     }
   },
   compoments: {
@@ -76,8 +84,8 @@ export default {
   },
   created() {
     window.userInfo = JSON.parse(localStorage.userInfo);
-    
-    this.getOilorderList();
+    document.title = "充值记录";
+    // this.getOilorderList();
   },
   watch: {
     // searchValue(val) {
@@ -88,6 +96,15 @@ export default {
 
   },
   methods: {
+    loadMore() {
+      if(this.haveNoFull) {
+        this.allLoaded = true;
+        return;
+      };
+      this.page++
+      // this.loading = true;
+      this.getOilorderList();
+    },
     loadTop() {
       this.page = 1;
       this.getOilorderList({
@@ -128,25 +145,25 @@ export default {
         params: { info: item }
       });
     },
-    getOilorderList(param, type) {
+    getOilorderList() {
       var that = this;
       var tmpParam = {
-        page:1,//  int *当前页数
-        limit:999,// int *页面大小
+        page:this.page,//  int *当前页数
+        limit:this.limit,// int *页面大小
         user_id:window.userInfo.id
       };
       utils.Get('PayList', tmpParam)
         .then((response) => {
           let data = response.data;
           if (data.code === '0') {
-            that.list = data.data;
-            // rownumber string  无
-            // id  string  无
-            // user_id string  无
-            // pay_amount  string  充值金额
-            // pay_time  string  充值时间
-            // pay_type  string  1充值，0消费
-            // pay_source
+            if(data.data.length<that.limit){
+              that.haveNoFull = true;
+            }
+            if(this.page == 1){
+              that.list = data.data;
+            }else {
+              that.list = that.list.concat(data.data);
+            }
           } else {
             // Toast(data.msg || '获取加油记录失败！');
           }
@@ -163,6 +180,14 @@ export default {
 
 </script>
 <style>
+.page-infinite-loading{
+  text-align: center;
+    padding: 16px;
+}
+.jy-nodata-des {
+  text-align: center;
+  padding-top: 20px;
+}
 .jy-cl-filter ::-webkit-input-placeholder {
   /* WebKit browsers */
   direction: rtl;
@@ -258,7 +283,7 @@ export default {
 }
 
 .jy-consumelist-item-name {
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 500;
   color: rgba(51, 51, 51, 1);
 }
