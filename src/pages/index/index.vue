@@ -218,7 +218,7 @@ export default {
           // this.$message({
           //   type: 'info',
           //   message: '取消输入'
-          // });       
+          // });
         });
       // MessageBox.prompt('请输入金额','充值').then(({ value, action }) => {
       //   function isNumber(val){
@@ -301,6 +301,8 @@ export default {
         let data = response.data;
         if (data.code === '0') {
           that.sumMoney = data.data;
+          window.userInfo.apple_balance = data.data;
+          localStorage.userInfo = JSON.stringify(window.userInfo);
         } else {
           Toast(data.msg);
         }

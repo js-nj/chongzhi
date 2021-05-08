@@ -49,7 +49,7 @@ export default {
       loading: false,
       allLoaded: false,
       haveNoFull:false,
-      page: 1,
+      page: 0,
       searchValue: '',
       showContent: false,
       limit: 10,
@@ -100,8 +100,9 @@ export default {
       if(this.haveNoFull) {
         this.allLoaded = true;
         return;
-      };
-      this.page++
+      }else {
+        this.page++
+      }
       // this.loading = true;
       this.getOilorderList();
     },
