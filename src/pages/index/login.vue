@@ -8,7 +8,7 @@
       <div class="login_form">
         <input type="text" class="qxs-icon" :placeholder="nameholder" v-model="userName">
         <div style="position:relative;">
-          <input type="number" class="qxs-icon" placeholder="验证码" maxlength="4" v-model="checkNumber" /><span class="jy-getcode" @click="getCheckCode">{{checkCodeContent}}</span>
+          <input type="text" class="qxs-icon" placeholder="验证码" maxlength="4" v-model="checkNumber" /><span class="jy-getcode" @click="getCheckCode">{{checkCodeContent}}</span>
         </div>
         <button style="" class="index_login_btn login_btn" @click="login">登 录</button>
       </div>
